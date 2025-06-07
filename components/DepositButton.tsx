@@ -35,12 +35,13 @@ export default function DepositButton() {
         placeholder="Enter amount in ETH"
         className="border px-2 py-1 rounded p-4 m-4"
       />
+      ETH
       <button
         className=" p-4 m-4 cursor-pointer font-semibold rounded-lg bg-green-50"
         onClick={handleDeposit}
         disabled={isPending || !isConnected || !isScrollSepolia}
       >
-        {isPending && !isSuccess ? "Deposit in progress..." : "Deposit"}
+        {isPending && !isSuccess ? "Deposit in progress..." : "Deposit"} 
       </button>
       {isSuccess && <p>✅ Transaction confirmed ! </p>}
     </div>

@@ -1,5 +1,6 @@
 "use client";
 import ReadBalance from "@/hooks/readBalance";
+import { formatEther } from 'viem';
 
 export default function ReadFromContract() {
   
@@ -14,7 +15,9 @@ export default function ReadFromContract() {
         Your balance in the contract:{" "}
         {isLoading
           ? "Loading..."
-          : data + " ETH"}
+          : data !== undefined && data !== null
+            ? formatEther(BigInt(data as string | number | bigint)) + " ETH"
+            : "No data"}
         {""}
       </p>
 
