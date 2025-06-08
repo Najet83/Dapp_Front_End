@@ -2,21 +2,28 @@
 "use client";
 
 import useDeposit from "@/hooks/useDeposit";
-import { useEffect } from "react";
+import { useEffect,useState } from "react";
 import ReadFromContract from "../components/ReadFromContract";
 
 export default function DepositButton() {
+  
   const {
    
-    handleDeposit,
+    deposit,
     isSuccess,
     isPending,
+    isConfirming,
+    error,
     isConnected,
-    isScrollSepolia,  
-    amount,
+    isScrollSepolia,
     setAmount,
+    amount,    
     refetch
   } = useDeposit();
+
+  const handleDeposit = () => {
+    deposit();
+  };
 
   useEffect(() => {
     refetch();
@@ -25,9 +32,9 @@ export default function DepositButton() {
 
   return (
     <div>
-      <div>
+      {/* <div>
         <ReadFromContract />
-      </div>
+      </div> */}
       <input
         type="text"
         value={amount}
@@ -39,11 +46,16 @@ export default function DepositButton() {
       <button
         className=" p-4 m-4 cursor-pointer font-semibold rounded-lg bg-green-50"
         onClick={handleDeposit}
-        disabled={isPending || !isConnected || !isScrollSepolia}
+        disabled={isPending || isConfirming || !isConnected || !isScrollSepolia}
       >
-        {isPending && !isSuccess ? "Deposit in progress..." : "Deposit"} 
+        {isPending
+          ? 'Waiting for wallet...'
+          : isConfirming
+          ? 'Confirming...'
+          : 'Deposit'}
       </button>
-      {isSuccess && <p>✅ Transaction confirmed ! </p>}
+      {isSuccess && <p className="text-green-600">✅ Deposit confirmed ! </p>}
+      {/* {error && <p className="text-red-600">Error: {error.message}</p>} */}
     </div>
   );
 }

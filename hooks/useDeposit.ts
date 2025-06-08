@@ -25,22 +25,25 @@ export default function useDeposit() {
 
     console.log("balance:", balance?.value);  // balance of the wallet
 
-    const { writeContract, data: txHash, isPending } = useWriteContract();
+    const { writeContract, 
+        data: txHash, 
+        isPending,
+        error, } = useWriteContract();
 
-    const { isSuccess } = useWaitForTransactionReceipt({
+    const { isSuccess,isLoading: isConfirming } = useWaitForTransactionReceipt({
         hash: txHash,
         query: {
             enabled: !!txHash,
             onSuccess: () => {
                 console.log('✅ Deposit success — updating balance');
                 refetchBalance(); // ✅ met à jour le solde ETH du wallet
-                refetch();
+                refetch(); // met à jour le solde ETH dand le smart contract
             },
         },
     });
 
 
-    const handleDeposit = () => {
+    const deposit = () => {
         writeContract({
             ...wagmiContractConfig,
             functionName: "deposit",
@@ -51,13 +54,15 @@ export default function useDeposit() {
 
     return {
 
-        handleDeposit,
+        deposit,
         isSuccess,
         isPending,
+        isConfirming,
+        error,
         isConnected,
         isScrollSepolia,
-        amount,
         setAmount,
+        amount,
         refetch
     };
 }

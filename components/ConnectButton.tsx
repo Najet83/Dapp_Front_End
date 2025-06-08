@@ -1,11 +1,16 @@
-
+"use client";
 import Connect from "@/hooks/connect";
+import { useEffect } from 'react';
+
 export default function ConnectButton() {
-  const {address,
-    isConnected,
-    isScrollSepolia,
-    wagmiContractConfig} = Connect();
-  
+  const { address, isConnected, isScrollSepolia, wagmiContractConfig } =
+    Connect();
+
+  useEffect(() => {
+    console.log("isConnected:", isConnected);
+    console.log("address:", address);
+  }, [isConnected]);
+
   return (
     <>
       <div className="p-4 m-4 font-semibold rounded-lg bg-yellow-50">
