@@ -5,9 +5,9 @@ import DepositComponent from "@/components/DepositComponent";
 import WithdrawComponent from "@/components/WithdrawComponent";
 import ReadFromContract from "@/components/ReadFromContract";
 
+
 export default function Home() {
   
-
   return (
     <>
       <div>

@@ -1,11 +1,12 @@
 "use client";
 import useDeposit from "@/hooks/useDeposit";
-import { useEffect } from "react";
+import { useEffect,useState } from "react";
 
 export default function DepositComponent() {
+
+  const [showSuccess, setShowSuccess] = useState(false);
   
   const {
-   
     deposit,
     isSuccess,
     isPending,
@@ -14,22 +15,27 @@ export default function DepositComponent() {
     isConnected,
     isScrollSepolia,
     setAmount,
-    amount,    
-    refetch
+    amount,
+    refetch,
   } = useDeposit();
 
-  const handleDeposit = () => {
-    deposit();
-  };
-
+  // ✅ Affiche le message de succès puis le cache après 3 secondes
   useEffect(() => {
-    refetch();
-  
-      }, [isSuccess]);
+    if (isSuccess) {
+      refetch();
+      setShowSuccess(true);
+      const timer = setTimeout(() => setShowSuccess(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [isSuccess]);
+
+  const handleDeposit = async () => {
+    setShowSuccess(false); // Masquer le message immédiatement
+    await deposit();
+  };
 
   return (
     <div>
-      
       <input
         type="text"
         value={amount}
@@ -43,14 +49,15 @@ export default function DepositComponent() {
         onClick={handleDeposit}
         disabled={isPending || isConfirming || !isConnected || !isScrollSepolia}
       >
-        {isPending
-          ? 'Waiting for wallet...'
+        {!isScrollSepolia
+          ? "Deposit"
+          : isPending
+          ? "Waiting for wallet..."
           : isConfirming
-          ? 'Confirming...'
-          : 'Deposit'}
+          ? "Confirming..."
+          : "Deposit"}
       </button>
-      {isSuccess && <p className="text-green-600">✅ Deposit confirmed ! </p>}
-      
+      {showSuccess && <p id="message" className="text-green-600">✅ Deposit confirmed ! </p>}
     </div>
   );
 }

@@ -1,10 +1,12 @@
 "use client";
 
-import { useWithdraw } from '@/hooks/useWithdraw';
-import { useState,useEffect } from 'react';
+import { useWithdraw } from "@/hooks/useWithdraw";
+import { useState, useEffect } from "react";
 
 export default function WithdrawComponent() {
-  const [amount, setAmount] = useState('0.00000000000001');
+
+  const [showSuccess, setShowSuccess] = useState(false);
+
   const {
     withdraw,
     isPending,
@@ -13,17 +15,30 @@ export default function WithdrawComponent() {
     error,
     isConnected,
     isScrollSepolia,
-    refetch
+    amount,
+    setAmount,
+    refetch,
   } = useWithdraw();
 
-  const handleWithdraw = () => {
-    withdraw(amount);
+  // ✅ Affiche le message de succès puis le cache après 3 secondes
+    useEffect(() => {
+      if (isSuccess) {
+        refetch();
+        setShowSuccess(true);
+        const timer = setTimeout(() => setShowSuccess(false), 3000);
+        return () => clearTimeout(timer);
+      }
+    }, [isSuccess]);
+  
+
+  const handleWithdraw = async () => {
+    setShowSuccess(false); // Masquer le message immédiatement
+    await withdraw();
   };
 
-  useEffect(() => {
-      refetch();
-    
-        }, [isSuccess]);
+  /* useEffect(() => {
+    refetch();
+  }, [isSuccess]); */
 
   return (
     <div className="space-y-3">
@@ -40,14 +55,15 @@ export default function WithdrawComponent() {
         disabled={isPending || isConfirming || !isConnected || !isScrollSepolia}
         className="p-4 m-4 cursor-pointer font-semibold rounded-lg bg-red-50"
       >
-        {isPending
-          ? 'Waiting for wallet...'
+        {!isScrollSepolia
+          ? "Withdraw"
+          : isPending
+          ? "Waiting for wallet..."
           : isConfirming
-          ? 'Confirming...'
-          : 'Withdraw'}
+          ? "Confirming..."
+          : "Withdraw"}
       </button>
-      {isSuccess && <p className="text-green-600">✅ Withdrawal confirmed </p>}
-      
+      {showSuccess && <p className="text-green-600">✅ Withdrawal confirmed </p>}
     </div>
   );
 }

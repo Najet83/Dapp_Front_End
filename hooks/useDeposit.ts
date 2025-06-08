@@ -1,36 +1,36 @@
-import { useWriteContract, useWaitForTransactionReceipt, useBalance } from "wagmi";
+import { useWriteContract, useWaitForTransactionReceipt, useBalance, useChainId } from "wagmi";
 import { parseEther } from "viem";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReadBalance from "@/hooks/readBalance";
 
 export default function useDeposit() {
-
+    const chainId = useChainId();
     const [amount, setAmount] = useState("0.00000000000001");
-    const { 
+    const [txHash, setTxHash] = useState<`0x${string}` | undefined>();
+
+    const {
         address,
         isConnected,
         isScrollSepolia,
         wagmiContractConfig,
         data,
         isLoading,
-        refetch } = ReadBalance(); 
-          
-    console.log("data:", data);      // balance of the contract
-    console.log("adress of wallet:", address); 
+        refetch } = ReadBalance();
+
 
     const { data: balance, refetch: refetchBalance, isLoading: loadingBalance } = useBalance({
         address,
         watch: true,
-    });   
+    });
 
-    console.log("balance:", balance?.value);  // balance of the wallet
 
-    const { writeContract, 
-        data: txHash, 
+    const { 
+        writeContractAsync ,
+        /* data: txHash, */
         isPending,
         error, } = useWriteContract();
 
-    const { isSuccess,isLoading: isConfirming } = useWaitForTransactionReceipt({
+    const { isSuccess, isLoading: isConfirming } = useWaitForTransactionReceipt({
         hash: txHash,
         query: {
             enabled: !!txHash,
@@ -42,15 +42,28 @@ export default function useDeposit() {
         },
     });
 
+    // 🧼 Réinitialise txHash (donc isSuccess) si on change de réseau
+    useEffect(() => {
+        setTxHash(undefined);
+    }, [chainId]);
 
-    const deposit = () => {
-        writeContract({
-            ...wagmiContractConfig,
-            functionName: "deposit",
-            value: parseEther(amount),
-        });
+    const deposit = async () => {
+        try {
+            const hash = await writeContractAsync({
+                ...wagmiContractConfig,
+                functionName: "deposit",
+                value: parseEther(amount),
+            });
+            setTxHash(hash as `0x${string}`);
 
-    }
+        } catch (error: any) {
+            if (error?.message?.includes('User denied')) {
+                console.warn('🚫 Transaction rejected by the user ');
+            } else {
+                console.error('❌ Error during deposit :', error);
+            }
+        }
+    };
 
     return {
 
@@ -63,6 +76,7 @@ export default function useDeposit() {
         isScrollSepolia,
         setAmount,
         amount,
+        txHash,
         refetch
     };
 }

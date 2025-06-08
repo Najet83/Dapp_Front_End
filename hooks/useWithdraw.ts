@@ -1,10 +1,13 @@
 // hooks/useWithdraw.ts
-import { useWriteContract, useWaitForTransactionReceipt, useBalance } from 'wagmi';
+import { useWriteContract, useWaitForTransactionReceipt, useBalance, useChainId } from 'wagmi';
 import { parseEther } from 'viem';
+import { useEffect, useState } from "react";
 import ReadBalance from "@/hooks/readBalance";
 
 export function useWithdraw() {
-   
+    const chainId = useChainId();
+    const [amount, setAmount] = useState('0.00000000000001');
+    const [txHash, setTxHash] = useState<`0x${string}` | undefined>();
     const {
         address,
         wagmiContractConfig,
@@ -18,16 +21,16 @@ export function useWithdraw() {
     });
 
     const {
-        writeContract,
-        data: hash,
+        writeContractAsync,
+        /* data: hash, */
         isPending,
         error,
     } = useWriteContract();
 
     const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
-        hash,
+        hash: txHash,
         query: {
-            enabled: !!hash,
+            enabled: !!txHash,
             onSuccess: () => {
                 console.log('✅ Withdraw success — updating balance');
                 refetchBalance(); // ✅ met à jour le solde ETH du wallet
@@ -36,12 +39,27 @@ export function useWithdraw() {
         },
     });
 
-    const withdraw = (ethAmount: string) => {
-        writeContract({
-            ...wagmiContractConfig,
-            functionName: 'withdraw',
-            args: [parseEther(ethAmount)],
-        });
+    // 🧼 Réinitialise txHash (donc isSuccess) si on change de réseau
+    useEffect(() => {
+        setTxHash(undefined);
+    }, [chainId]);
+
+
+    const withdraw = async () => {
+        try {
+            const hash = await writeContractAsync({
+                ...wagmiContractConfig,
+                functionName: 'withdraw',
+                args: [parseEther(amount)],
+            });
+            setTxHash(hash as `0x${string}`);
+        } catch (error: any) {
+            if (error?.message?.includes('User denied')) {
+                console.warn('🚫 Transaction rejected by the user ');
+            } else {
+                console.error('❌ Error during withdraw :', error);
+            }
+        }
     };
 
     return {
@@ -52,6 +70,9 @@ export function useWithdraw() {
         isConnected,
         isScrollSepolia,
         error,
+        txHash,
+        amount,
+        setAmount,
         refetch
     };
 }
