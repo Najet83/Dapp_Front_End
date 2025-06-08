@@ -21,9 +21,6 @@ export default function ReadFromContract() {
         {""}
       </p>
 
-      {/* <button className="cursor-pointer" onClick={() => refetch()}>
-        🔄 Refresh
-      </button> */}
     </div>
   );
 }

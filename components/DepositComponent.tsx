@@ -1,11 +1,8 @@
-// components/DepositButton.tsx
 "use client";
-
 import useDeposit from "@/hooks/useDeposit";
-import { useEffect,useState } from "react";
-import ReadFromContract from "../components/ReadFromContract";
+import { useEffect } from "react";
 
-export default function DepositButton() {
+export default function DepositComponent() {
   
   const {
    
@@ -32,9 +29,7 @@ export default function DepositButton() {
 
   return (
     <div>
-      {/* <div>
-        <ReadFromContract />
-      </div> */}
+      
       <input
         type="text"
         value={amount}
@@ -55,7 +50,7 @@ export default function DepositButton() {
           : 'Deposit'}
       </button>
       {isSuccess && <p className="text-green-600">✅ Deposit confirmed ! </p>}
-      {/* {error && <p className="text-red-600">Error: {error.message}</p>} */}
+      
     </div>
   );
 }

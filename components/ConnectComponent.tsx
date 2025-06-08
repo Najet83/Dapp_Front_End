@@ -2,7 +2,7 @@
 import Connect from "@/hooks/connect";
 import { useEffect } from 'react';
 
-export default function ConnectButton() {
+export default function ConnectComponent() {
   const { address, isConnected, isScrollSepolia, wagmiContractConfig } =
     Connect();
 

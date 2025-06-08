@@ -3,7 +3,7 @@
 import { useWithdraw } from '@/hooks/useWithdraw';
 import { useState,useEffect } from 'react';
 
-export default function WithdrawButton() {
+export default function WithdrawComponent() {
   const [amount, setAmount] = useState('0.00000000000001');
   const {
     withdraw,
@@ -47,7 +47,7 @@ export default function WithdrawButton() {
           : 'Withdraw'}
       </button>
       {isSuccess && <p className="text-green-600">✅ Withdrawal confirmed </p>}
-      {/* {error && <p className="text-red-600">Error: {error.message}</p>} */}
+      
     </div>
   );
 }
