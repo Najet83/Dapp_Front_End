@@ -31,15 +31,16 @@ export default function useDeposit() {
 
     const { isSuccess, isLoading: isConfirming } = useWaitForTransactionReceipt({
     hash: txHash,
-    query: {
-      enabled: !!txHash,
-      onSuccess: () => {
+    
+  });
+    
+    useEffect(() => {
+      if (isSuccess) {
         console.log("✅ Dépôt confirmé, mise à jour des soldes...");
         refetchBalance();
         refetch();
-      },
-    },
-  });
+      }
+    }, [isSuccess]);
     
     // 🧼 Réinitialise txHash (donc isSuccess) si on change de réseau
     useEffect(() => {
