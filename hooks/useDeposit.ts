@@ -20,7 +20,6 @@ export default function useDeposit() {
 
     const { data: balance, refetch: refetchBalance, isLoading: loadingBalance } = useBalance({
         address,
-        watch: true,
     });
 
 
