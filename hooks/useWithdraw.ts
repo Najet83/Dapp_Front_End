@@ -17,7 +17,6 @@ export function useWithdraw() {
 
     const { data: balance, refetch: refetchBalance, isLoading: loadingBalance } = useBalance({
         address,
-        watch: true,
     });
 
     const {
@@ -29,16 +28,16 @@ export function useWithdraw() {
 
     const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
         hash: txHash,
-        query: {
-            enabled: !!txHash,
-            onSuccess: () => {
-                console.log('✅ Withdraw success — updating balance');
-                refetchBalance(); // ✅ met à jour le solde ETH du wallet
-                refetch(); // ✅ met à jour le solde ETH dand le smart contract
-            },
-        },
-    });
-
+        });
+    
+    useEffect(() => {
+      if (isSuccess) {
+        console.log("✅ Withdraw success — updating balance'");
+        refetchBalance(); // ✅ met à jour le solde ETH du wallet
+        refetch(); // ✅ met à jour le solde ETH dand le smart contract
+          }
+    }, [isSuccess]);
+    
     // 🧼 Réinitialise txHash (donc isSuccess) si on change de réseau
     useEffect(() => {
         setTxHash(undefined);
