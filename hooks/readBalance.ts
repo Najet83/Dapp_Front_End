@@ -13,7 +13,8 @@ export default function ReadBalance() {
     const { data, isLoading, refetch } = useReadContract({
         ...wagmiContractConfig,
         functionName: "balanceOf",
-        args: address !== undefined ? [address as `0x${string}`] : [],
+        args: address ? [address] : [], // <-- éviter undefined
+        enabled: !!address, 
     });
 
     console.log("data:", data);
