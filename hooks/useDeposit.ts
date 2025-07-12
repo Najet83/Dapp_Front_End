@@ -30,16 +30,16 @@ export default function useDeposit() {
         error, } = useWriteContract();
 
     const { isSuccess, isLoading: isConfirming } = useWaitForTransactionReceipt({
-        hash: txHash,
-        query: {
-            onSuccess: () => {
-                console.log('✅ Deposit success — updating balance');
-                refetchBalance(); // ✅ met à jour le solde ETH du wallet
-                refetch(); // met à jour le solde ETH dand le smart contract
-            },
-            enabled: !!txHash, // si besoin
-        }
-    });
+    hash: txHash,
+    query: {
+      enabled: !!txHash,
+      onSuccess: () => {
+        console.log("✅ Dépôt confirmé, mise à jour des soldes...");
+        refetchBalance();
+        refetchContractBalance();
+      },
+    },
+  });
     
     // 🧼 Réinitialise txHash (donc isSuccess) si on change de réseau
     useEffect(() => {
