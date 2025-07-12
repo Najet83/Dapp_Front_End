@@ -31,14 +31,13 @@ export default function useDeposit() {
 
     const { isSuccess, isLoading: isConfirming } = useWaitForTransactionReceipt({
         hash: txHash,
-        enabled: !!txHash,
         onSuccess: () => {
                 console.log('✅ Deposit success — updating balance');
                 refetchBalance(); // ✅ met à jour le solde ETH du wallet
                 refetch(); // met à jour le solde ETH dand le smart contract
             },
     });
-
+    
     // 🧼 Réinitialise txHash (donc isSuccess) si on change de réseau
     useEffect(() => {
         setTxHash(undefined);
