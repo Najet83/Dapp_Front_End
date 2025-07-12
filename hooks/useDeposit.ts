@@ -36,7 +36,7 @@ export default function useDeposit() {
       onSuccess: () => {
         console.log("✅ Dépôt confirmé, mise à jour des soldes...");
         refetchBalance();
-        refetchContractBalance();
+        refetch();
       },
     },
   });
