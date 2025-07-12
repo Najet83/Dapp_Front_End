@@ -14,7 +14,6 @@ export default function ReadBalance() {
         ...wagmiContractConfig,
         functionName: "balanceOf",
         args: address ? [address] : [], // <-- éviter undefined
-        enabled: !!address, 
     });
 
     console.log("data:", data);
